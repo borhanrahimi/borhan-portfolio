@@ -1,26 +1,154 @@
 @import "tailwindcss";
+@import "./styles/themes.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* =========================
+   Tailwind v4 tokens mapped to theme variables
+   ========================= */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* =========================
+   Global behavior
+   ========================= */
+html {
+  scroll-behavior: smooth;
 }
 
+/* Text selection */
+::selection {
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* Apply theme globally */
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg);
+  color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* =========================
+   Smooth theme transitions
+   ========================= */
+body,
+header,
+section,
+footer,
+div,
+a,
+button,
+span {
+  transition:
+    background-color 350ms ease,
+    color 350ms ease,
+    border-color 350ms ease,
+    box-shadow 350ms ease,
+    fill 350ms ease;
+}
+
+/* =========================
+   PER-SECTION STAGGER MODE
+   =========================
+   Only active when html has .theme-staggering
+*/
+
+/* delay helpers */
+html.theme-staggering .delay-0,
+html.theme-staggering .delay-0 * {
+  transition-delay: 0ms !important;
+}
+
+html.theme-staggering .delay-80,
+html.theme-staggering .delay-80 * {
+  transition-delay: 80ms !important;
+}
+
+html.theme-staggering .delay-160,
+html.theme-staggering .delay-160 * {
+  transition-delay: 160ms !important;
+}
+
+html.theme-staggering .delay-240,
+html.theme-staggering .delay-240 * {
+  transition-delay: 240ms !important;
+}
+
+html.theme-staggering .delay-320,
+html.theme-staggering .delay-320 * {
+  transition-delay: 320ms !important;
+}
+
+html.theme-staggering .delay-400,
+html.theme-staggering .delay-400 * {
+  transition-delay: 400ms !important;
+}
+
+html.theme-staggering .delay-480,
+html.theme-staggering .delay-480 * {
+  transition-delay: 480ms !important;
+}
+
+/* =========================
+   THEME UTILITY CLASSES
+   ========================= */
+
+/* Backgrounds */
+.theme-bg {
+  background: var(--bg);
+}
+
+.theme-surface {
+  background: var(--surface);
+}
+
+.theme-surface-2 {
+  background: var(--surface-2);
+}
+
+/* Text */
+.theme-text {
+  color: var(--text);
+}
+
+.theme-muted {
+  color: var(--muted);
+}
+
+/* Borders */
+.theme-border {
+  border-color: var(--border);
+}
+
+/* Cards */
+.theme-card {
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+/* =========================
+   SKILL CHIPS (THEME-DRIVEN)
+   ========================= */
+.theme-chip {
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  border-color: var(--chip-border);
+}
+
+/* =========================
+   HORIZONTAL SCROLL POLISH
+   ========================= */
+
+/* Hide scrollbar but keep scroll (Apple / Spotify style) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
