@@ -1,19 +1,18 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
-type Theme = "apple" | "spotify";
+type Theme = "classic" | "neon";
 
 function getSavedTheme(): Theme {
-  if (typeof window === "undefined") return "apple";
-  return (localStorage.getItem("theme") as Theme) || "apple";
+  if (typeof window === "undefined") return "classic";
+  return (localStorage.getItem("site-theme") as Theme) || "classic";
 }
 
 function applyTheme(theme: Theme) {
-  if (theme === "spotify") {
-    document.documentElement.setAttribute("data-theme", "spotify");
+  if (theme === "neon") {
+    document.documentElement.setAttribute("data-theme", "neon");
   } else {
     document.documentElement.removeAttribute("data-theme");
   }
@@ -66,22 +65,27 @@ function makeDrops(seed: number, count = 140): Drop[] {
   return drops;
 }
 
-const ICONS: Record<Theme, { src: string; label: string; subtitle: string }> = {
-  apple: {
-    src: "/icons/Apple.png",
-    label: "Apple",
+const THEMES: Record<
+  Theme,
+  { label: string; subtitle: string; dot: string; accent: string }
+> = {
+  classic: {
+    label: "Classic",
     subtitle: "Light · Clean · Minimal",
+    dot: "rgba(255,255,255,0.9)",
+    accent: "rgba(255,255,255,0.85)",
   },
-  spotify: {
-    src: "/icons/Spotify.png",
-    label: "Spotify",
-    subtitle: "Dark · Green Accent",
+  neon: {
+    label: "Neon",
+    subtitle: "Dark · Neon Accent",
+    dot: "#22c55e",
+    accent: "#22c55e",
   },
 };
 
 export default function ThemeToggle() {
   const reduce = useReducedMotion();
-  const [theme, setTheme] = useState<Theme>("apple");
+  const [theme, setTheme] = useState<Theme>("classic");
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
@@ -117,7 +121,7 @@ export default function ThemeToggle() {
     };
   }, [open]);
 
-  const label = useMemo(() => `Theme: ${ICONS[theme].label}`, [theme]);
+  const label = useMemo(() => `Theme: ${THEMES[theme].label}`, [theme]);
 
   function selectTheme(next: Theme) {
     if (next === theme) {
@@ -131,8 +135,7 @@ export default function ThemeToggle() {
     const x = window.innerWidth / 2;
     const y = window.innerHeight / 2;
 
-    // accent tint only (no blackout)
-    const accent = next === "spotify" ? "#1DB954" : "rgba(255,255,255,0.85)";
+    const accent = THEMES[next].accent;
 
     if (!reduce) {
       document.documentElement.classList.add("theme-staggering");
@@ -141,7 +144,7 @@ export default function ThemeToggle() {
 
     window.setTimeout(() => {
       setTheme(next);
-      localStorage.setItem("theme", next);
+      localStorage.setItem("site-theme", next);
       applyTheme(next);
     }, reduce ? 0 : 170);
 
@@ -178,16 +181,17 @@ export default function ThemeToggle() {
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        <span className="relative h-5 w-5 overflow-hidden rounded-md">
-          <Image
-            src={ICONS[theme].src}
-            alt={`${ICONS[theme].label} icon`}
-            fill
-            sizes="20px"
-            className="object-contain"
-            priority
-          />
-        </span>
+        {/* Dot instead of image */}
+        <span
+          aria-hidden
+          className="h-3 w-3 rounded-full border"
+          style={{
+            background: THEMES[theme].dot,
+            borderColor: "var(--border)",
+            boxShadow:
+              theme === "neon" ? "0 0 14px rgba(34,197,94,0.45)" : "none",
+          }}
+        />
 
         <span>{label}</span>
         <span className="ml-1">▾</span>
@@ -210,14 +214,14 @@ export default function ThemeToggle() {
             role="menu"
           >
             <MenuItem
-              active={theme === "apple"}
-              themeKey="apple"
-              onClick={() => selectTheme("apple")}
+              active={theme === "classic"}
+              themeKey="classic"
+              onClick={() => selectTheme("classic")}
             />
             <MenuItem
-              active={theme === "spotify"}
-              themeKey="spotify"
-              onClick={() => selectTheme("spotify")}
+              active={theme === "neon"}
+              themeKey="neon"
+              onClick={() => selectTheme("neon")}
             />
           </motion.div>
         )}
@@ -235,7 +239,7 @@ function MenuItem({
   themeKey: Theme;
   onClick: () => void;
 }) {
-  const meta = ICONS[themeKey];
+  const meta = THEMES[themeKey];
 
   return (
     <button
@@ -248,15 +252,17 @@ function MenuItem({
       role="menuitem"
     >
       <div className="flex items-center gap-3">
-        <span className="relative h-6 w-6 overflow-hidden rounded-md">
-          <Image
-            src={meta.src}
-            alt={`${meta.label} icon`}
-            fill
-            sizes="24px"
-            className="object-contain"
-          />
-        </span>
+        {/* Dot instead of icon */}
+        <span
+          aria-hidden
+          className="h-4 w-4 rounded-full border"
+          style={{
+            background: meta.dot,
+            borderColor: "var(--border)",
+            boxShadow:
+              themeKey === "neon" ? "0 0 14px rgba(34,197,94,0.45)" : "none",
+          }}
+        />
 
         <div className="flex-1">
           <div className="flex items-center justify-between">
@@ -323,7 +329,7 @@ function DropBurst({
               height: d.size * 1.6,
               transform: "translate(-50%, -50%)",
               background:
-                accent === "#1DB954"
+                accent === "#22c55e"
                   ? accent
                   : "radial-gradient(circle at center, rgba(255,255,255,0.9), rgba(210,210,210,0.6))",
               opacity: d.opacity,

@@ -1,5 +1,5 @@
 /* =========================
-   Apple default (light)
+   Classic (light)
    ========================= */
 :root {
     --bg: #ffffff;
@@ -16,16 +16,16 @@
 
     --accent: #09090b;
 
-    /* Skill chips (Apple style) */
+    /* Skill chips (classic style) */
     --chip-bg: rgba(0, 0, 0, 0.04);
     --chip-border: rgba(0, 0, 0, 0.12);
     --chip-text: var(--text);
 }
 
 /* =========================
-     Spotify (dark)
-     ========================= */
-[data-theme="spotify"] {
+   Neon (dark)
+   ========================= */
+[data-theme="neon"] {
     --bg: #0b0f0e;
     --surface: #0f1413;
     --surface-2: #121a18;
@@ -36,7 +36,7 @@
 
     --accent: #1db954;
 
-    /* Skill chips (Spotify green) */
+    /* Skill chips (neon accent) */
     --chip-bg: rgba(29, 185, 84, 0.15);
     --chip-border: rgba(29, 185, 84, 0.45);
     --chip-text: var(--accent);

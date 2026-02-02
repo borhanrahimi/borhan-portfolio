@@ -143,7 +143,7 @@ html.theme-staggering .delay-480 * {
    HORIZONTAL SCROLL POLISH
    ========================= */
 
-/* Hide scrollbar but keep scroll (Apple / Spotify style) */
+/* Hide scrollbar but keep scroll (clean UI style) */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
