@@ -177,7 +177,7 @@ export default function Hero() {
             >
               <Image
                 src="/profile.png"
-                alt="Profile"
+                alt="profile"
                 width={800}
                 height={800}
                 className="w-full h-full object-cover"
