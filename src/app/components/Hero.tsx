@@ -176,12 +176,13 @@ export default function Hero() {
               }}
             >
               <Image
-                src="/profile.png"
+                src="/Profile.png"
                 alt="profile"
                 width={800}
                 height={800}
                 className="w-full h-full object-cover"
                 priority
+                unoptimized
               />
             </div>
           </FadeIn>
