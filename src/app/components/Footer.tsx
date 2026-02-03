@@ -14,7 +14,9 @@ export default function Footer() {
 
                 <div className="flex gap-6 text-sm">
                     <a
-                        href="#"
+                        href="https://www.linkedin.com/in/borhanrahimi"
+                        target="_blank"
+                        rel="noreferrer"
                         className="theme-muted hover:opacity-80 transition-opacity"
                     >
                         LinkedIn

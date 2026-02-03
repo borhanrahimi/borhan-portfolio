@@ -35,7 +35,7 @@ const projects = [
             "Designed backend APIs and relational database schema",
             "Implemented CSV data ingestion and admin tools",
         ],
-        github: "#",
+        github: "https://github.com/borhanrahimi/student-course-planner",
     },
     {
         title: "PicPick — Android Photo Management App",
@@ -45,7 +45,7 @@ const projects = [
             "Applied MVC architecture and file I/O for local image management",
             "Designed scrollable layouts and modular activities for usability",
         ],
-        github: "#",
+        github: "https://github.com/borhanrahimi/PicPick",
     },
 ];
 

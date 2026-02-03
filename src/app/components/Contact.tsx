@@ -23,20 +23,47 @@ export default function Contact() {
                 </FadeInView>
 
                 <FadeInView delay={0.14}>
-                    <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                    <div className="flex flex-col sm:flex-row flex-wrap gap-6 justify-center items-center">
+                        {/* Email */}
                         <a
                             href="mailto:rahimi.borhan2000@gmail.com"
                             className="px-8 py-4 rounded-full transition-colors font-semibold"
                             style={{ background: "var(--accent)", color: "#fff" }}
                         >
-                            Get in Touch
+                            Email Me
                         </a>
+
+                        {/* Resume */}
                         <a
-                            href="/resume.pdf"
+                            href="/Borhan_Rahimi_RESUME.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="px-8 py-4 border rounded-full transition-colors font-semibold theme-border"
                             style={{ background: "var(--surface)", color: "var(--text)" }}
                         >
-                            View Resume
+                            Resume
+                        </a>
+
+                        {/* LinkedIn */}
+                        <a
+                            href="https://www.linkedin.com/in/borhanrahimi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-8 py-4 border rounded-full transition-colors font-semibold theme-border"
+                            style={{ background: "var(--surface)", color: "var(--text)" }}
+                        >
+                            LinkedIn
+                        </a>
+
+                        {/* GitHub */}
+                        <a
+                            href="https://github.com/borhanrahimi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-8 py-4 border rounded-full transition-colors font-semibold theme-border"
+                            style={{ background: "var(--surface)", color: "var(--text)" }}
+                        >
+                            GitHub
                         </a>
                     </div>
                 </FadeInView>
