@@ -4,9 +4,23 @@ import { FadeInView } from "./Motion";
 
 const sections = [
   {
+    title: "Observability & Platform",
+    description: "Monitoring, analysis, and operational visibility for reliable systems.",
+    items: [
+      "Dynatrace",
+      "DQL",
+      "Dashboards",
+      "Notebooks",
+      "Application Monitoring",
+      "Logs & Traces",
+      "Platform Automation",
+      "System Reliability",
+    ],
+  },
+  {
     title: "Programming Languages",
     description: "Core languages used across frontend, backend, and systems.",
-    items: ["TypeScript", "JavaScript", "Python", "Java", "C", "CSS"],
+    items: ["TypeScript", "JavaScript", "Python", "Java", "C", "SQL"],
   },
   {
     title: "Frontend",
@@ -17,7 +31,7 @@ const sections = [
       "Tailwind CSS",
       "Responsive UI",
       "State Management",
-      "Accessibility Basics",
+      "Accessibility",
     ],
   },
   {
@@ -30,7 +44,7 @@ const sections = [
       "CRUD APIs",
       "Auth / JWT",
       "Input Validation",
-      "Error Handling",
+      "FastAPI",
     ],
   },
   {
@@ -39,34 +53,11 @@ const sections = [
     items: [
       "MySQL",
       "MongoDB",
-      "NoSQL",
+      "PostgreSQL",
+      "SQLAlchemy",
       "Schema Design",
       "SQL Queries",
       "Relationships & Joins",
-      "Indexing Basics",
-    ],
-  },
-  {
-    title: "Systems & OS",
-    description: "Foundational systems knowledge and command-line workflows.",
-    items: [
-      "Linux (CLI)",
-      "Bash / Shell",
-      "File Permissions",
-      "Processes & Signals",
-      "Environment Variables",
-      "Networking Basics",
-    ],
-  },
-  {
-    title: "Architecture & Design",
-    description: "Structuring codebases for clarity, scale, and maintainability.",
-    items: [
-      "MVC (Model–View–Controller)",
-      "Separation of Concerns",
-      "Layered Architecture",
-      "UML Diagrams (Class / Sequence)",
-      "Code Organization",
     ],
   },
   {
@@ -76,11 +67,12 @@ const sections = [
       "Docker",
       "Docker Compose",
       "Git / GitHub",
+      "GitLab",
       "Jira",
-      "AWS (Foundations)",
-      "Environment Config (.env)",
-      "VS Code",
       "Postman",
+      "pytest",
+      "Linux / CLI",
+      "Agile",
     ],
   },
 ];
@@ -102,13 +94,13 @@ export default function Skills() {
         {/* Hint row */}
         <FadeInView delay={0.08}>
           <div className="mb-6 flex items-center justify-between">
-            <p className="text-sm theme-muted">Scroll to explore categories</p>
+            <p className="text-sm theme-muted">Scroll horizontally to explore categories</p>
             <p className="hidden md:block text-sm theme-muted">→</p>
           </div>
 
           {/* Horizontal scroll */}
           <div
-            className="flex gap-6 overflow-x-auto pb-4"
+            className="flex gap-6 overflow-x-auto pb-4 no-scrollbar"
             style={{
               WebkitOverflowScrolling: "touch",
               scrollSnapType: "x mandatory",

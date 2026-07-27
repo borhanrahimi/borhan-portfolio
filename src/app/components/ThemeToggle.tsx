@@ -1,14 +1,24 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 type Theme = "classic" | "neon";
 
-function getSavedTheme(): Theme {
-  if (typeof window === "undefined") return "classic";
-  return (localStorage.getItem("site-theme") as Theme) || "classic";
-}
+const themes: Record<
+  Theme,
+  { label: string; subtitle: string; color: string }
+> = {
+  classic: {
+    label: "Classic",
+    subtitle: "Light and minimal",
+    color: "#ffffff",
+  },
+  neon: {
+    label: "Neon",
+    subtitle: "Dark with green accents",
+    color: "#1db954",
+  },
+};
 
 function applyTheme(theme: Theme) {
   if (theme === "neon") {
@@ -18,338 +28,112 @@ function applyTheme(theme: Theme) {
   }
 }
 
-/* deterministic random */
-function mulberry32(seed: number) {
-  return function () {
-    let t = (seed += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-type Drop = {
-  id: number;
-  size: number;
-  dx: number;
-  dy: number;
-  delay: number;
-  duration: number;
-  opacity: number;
-};
-
-function makeDrops(seed: number, count = 140): Drop[] {
-  const rand = mulberry32(seed);
-  const drops: Drop[] = [];
-
-  for (let i = 0; i < count; i++) {
-    const angle = rand() * Math.PI * 2;
-    const base = 60 + rand() * 520;
-    const dist = base * (0.75 + rand() * 0.9);
-
-    const size = 5 + rand() * 14;
-    const dx = Math.cos(angle) * dist;
-    const dy = Math.sin(angle) * dist;
-
-    drops.push({
-      id: i,
-      size,
-      dx,
-      dy,
-      delay: rand() * 0.09,
-      duration: 0.35 + rand() * 0.35,
-      opacity: 0.22 + rand() * 0.55,
-    });
-  }
-
-  return drops;
-}
-
-const THEMES: Record<
-  Theme,
-  { label: string; subtitle: string; dot: string; accent: string }
-> = {
-  classic: {
-    label: "Classic",
-    subtitle: "Light · Clean · Minimal",
-    dot: "rgba(255,255,255,0.9)",
-    accent: "rgba(255,255,255,0.85)",
-  },
-  neon: {
-    label: "Neon",
-    subtitle: "Dark · Neon Accent",
-    dot: "#22c55e",
-    accent: "#22c55e",
-  },
-};
-
 export default function ThemeToggle() {
-  const reduce = useReducedMotion();
   const [theme, setTheme] = useState<Theme>("classic");
   const [open, setOpen] = useState(false);
-  const wrapRef = useRef<HTMLDivElement | null>(null);
-
-  const [burst, setBurst] = useState<{
-    x: number;
-    y: number;
-    accent: string;
-    seed: number;
-    key: number;
-  } | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const saved = getSavedTheme();
-    setTheme(saved);
-    applyTheme(saved);
+    const saved = localStorage.getItem("site-theme");
+    const initialTheme: Theme = saved === "neon" ? "neon" : "classic";
+    const frame = requestAnimationFrame(() => {
+      setTheme(initialTheme);
+      applyTheme(initialTheme);
+    });
+
+    return () => cancelAnimationFrame(frame);
   }, []);
 
-  // close on outside click / escape
   useEffect(() => {
-    function onClick(e: MouseEvent) {
-      if (!open) return;
-      const t = e.target as Node;
-      if (wrapRef.current && !wrapRef.current.contains(t)) setOpen(false);
+    function closeMenu(event: MouseEvent) {
+      if (
+        wrapRef.current &&
+        !wrapRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
     }
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
     }
-    document.addEventListener("mousedown", onClick);
-    document.addEventListener("keydown", onKey);
+
+    document.addEventListener("mousedown", closeMenu);
+    document.addEventListener("keydown", closeOnEscape);
+
     return () => {
-      document.removeEventListener("mousedown", onClick);
-      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", closeMenu);
+      document.removeEventListener("keydown", closeOnEscape);
     };
-  }, [open]);
+  }, []);
 
-  const label = useMemo(() => `Theme: ${THEMES[theme].label}`, [theme]);
-
-  function selectTheme(next: Theme) {
-    if (next === theme) {
-      setOpen(false);
-      return;
-    }
-
+  function selectTheme(nextTheme: Theme) {
+    setTheme(nextTheme);
+    applyTheme(nextTheme);
+    localStorage.setItem("site-theme", nextTheme);
     setOpen(false);
-
-    // splash from center
-    const x = window.innerWidth / 2;
-    const y = window.innerHeight / 2;
-
-    const accent = THEMES[next].accent;
-
-    if (!reduce) {
-      document.documentElement.classList.add("theme-staggering");
-      setBurst({ x, y, accent, seed: Date.now(), key: Date.now() });
-    }
-
-    window.setTimeout(() => {
-      setTheme(next);
-      localStorage.setItem("site-theme", next);
-      applyTheme(next);
-    }, reduce ? 0 : 170);
-
-    window.setTimeout(() => {
-      setBurst(null);
-      document.documentElement.classList.remove("theme-staggering");
-    }, reduce ? 0 : 950);
   }
 
   return (
-    <div ref={wrapRef} className="relative inline-block">
-      {/* Splash */}
-      <AnimatePresence>
-        {burst && (
-          <DropBurst
-            key={burst.key}
-            x={burst.x}
-            y={burst.y}
-            accent={burst.accent}
-            seed={burst.seed}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Button */}
+    <div ref={wrapRef} className="relative">
       <button
-        onClick={() => setOpen((v) => !v)}
-        className="rounded-full border px-4 py-2 text-sm font-semibold hover:opacity-90 inline-flex items-center gap-2"
-        style={{
-          borderColor: "var(--border)",
-          background: "var(--surface)",
-          color: "var(--text)",
-        }}
+        type="button"
+        onClick={() => setOpen((current) => !current)}
+        className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold theme-border theme-text"
+        style={{ background: "var(--surface)" }}
         aria-haspopup="menu"
         aria-expanded={open}
+        aria-label={`Select color theme. Current theme: ${themes[theme].label}`}
       >
-        {/* Dot instead of image */}
         <span
-          aria-hidden
-          className="h-3 w-3 rounded-full border"
-          style={{
-            background: THEMES[theme].dot,
-            borderColor: "var(--border)",
-            boxShadow:
-              theme === "neon" ? "0 0 14px rgba(34,197,94,0.45)" : "none",
-          }}
+          aria-hidden="true"
+          className="h-3 w-3 rounded-full border theme-border"
+          style={{ background: themes[theme].color }}
         />
-
-        <span>{label}</span>
-        <span className="ml-1">▾</span>
+        <span className="hidden md:inline">{themes[theme].label}</span>
+        <span aria-hidden="true">▾</span>
       </button>
 
-      {/* Menu */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: 6, scale: 0.98 }}
-            animate={{ opacity: 1, y: 10, scale: 1 }}
-            exit={{ opacity: 0, y: 6, scale: 0.98 }}
-            transition={{ duration: 0.16, ease: "easeOut" }}
-            className="absolute right-0 mt-2 w-56 rounded-xl border overflow-hidden shadow-lg z-50"
-            style={{
-              borderColor: "var(--border)",
-              background: "var(--surface)",
-              color: "var(--text)",
-            }}
-            role="menu"
-          >
-            <MenuItem
-              active={theme === "classic"}
-              themeKey="classic"
-              onClick={() => selectTheme("classic")}
-            />
-            <MenuItem
-              active={theme === "neon"}
-              themeKey="neon"
-              onClick={() => selectTheme("neon")}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
+      {open && (
+        <div
+          className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border p-1 shadow-xl theme-border"
+          style={{ background: "var(--surface)" }}
+          role="menu"
+          aria-label="Color theme"
+        >
+          {(Object.keys(themes) as Theme[]).map((themeKey) => {
+            const option = themes[themeKey];
+            const active = themeKey === theme;
 
-function MenuItem({
-  active,
-  themeKey,
-  onClick,
-}: {
-  active: boolean;
-  themeKey: Theme;
-  onClick: () => void;
-}) {
-  const meta = THEMES[themeKey];
-
-  return (
-    <button
-      onClick={onClick}
-      className="w-full text-left px-4 py-3 hover:opacity-90"
-      style={{
-        background: active ? "var(--surface-2)" : "transparent",
-        borderTop: "1px solid var(--border)",
-      }}
-      role="menuitem"
-    >
-      <div className="flex items-center gap-3">
-        {/* Dot instead of icon */}
-        <span
-          aria-hidden
-          className="h-4 w-4 rounded-full border"
-          style={{
-            background: meta.dot,
-            borderColor: "var(--border)",
-            boxShadow:
-              themeKey === "neon" ? "0 0 14px rgba(34,197,94,0.45)" : "none",
-          }}
-        />
-
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <span className="font-semibold">{meta.label}</span>
-            {active && <span className="text-xs">✓</span>}
-          </div>
-          <div className="text-xs opacity-70 mt-1">{meta.subtitle}</div>
+            return (
+              <button
+                key={themeKey}
+                type="button"
+                onClick={() => selectTheme(themeKey)}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left hover:opacity-80 theme-text"
+                style={{
+                  background: active ? "var(--surface-2)" : "transparent",
+                }}
+                role="menuitemradio"
+                aria-checked={active}
+              >
+                <span
+                  aria-hidden="true"
+                  className="h-4 w-4 rounded-full border theme-border"
+                  style={{ background: option.color }}
+                />
+                <span className="flex-1">
+                  <span className="block font-semibold">{option.label}</span>
+                  <span className="block text-xs theme-muted">
+                    {option.subtitle}
+                  </span>
+                </span>
+                {active && <span aria-hidden="true">✓</span>}
+              </button>
+            );
+          })}
         </div>
-      </div>
-    </button>
-  );
-}
-
-function DropBurst({
-  x,
-  y,
-  accent,
-  seed,
-  count = 140,
-}: {
-  x: number;
-  y: number;
-  accent: string;
-  seed: number;
-  count?: number;
-}) {
-  const drops = useMemo(() => makeDrops(seed, count), [seed, count]);
-
-  return (
-    <motion.div
-      className="fixed inset-0 z-[9999] pointer-events-none"
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <div className="absolute inset-0" style={{ mixBlendMode: "overlay" }}>
-        {/* soft page tint */}
-        <motion.div
-          className="absolute rounded-full"
-          style={{
-            left: x,
-            top: y,
-            width: "170vmax",
-            height: "170vmax",
-            transform: "translate(-50%, -50%)",
-            background: accent,
-            opacity: 0.18,
-            filter: "blur(140px)",
-          }}
-          initial={{ scale: 0.12, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.18 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        />
-
-        {/* droplets */}
-        {drops.map((d) => (
-          <motion.div
-            key={d.id}
-            className="absolute rounded-full"
-            style={{
-              left: x,
-              top: y,
-              width: d.size * 1.6,
-              height: d.size * 1.6,
-              transform: "translate(-50%, -50%)",
-              background:
-                accent === "#22c55e"
-                  ? accent
-                  : "radial-gradient(circle at center, rgba(255,255,255,0.9), rgba(210,210,210,0.6))",
-              opacity: d.opacity,
-            }}
-            initial={{ x: 0, y: 0, scale: 0.3, filter: "blur(2px)" }}
-            animate={{
-              x: d.dx * 2.4,
-              y: d.dy * 2.4,
-              opacity: 0,
-              scale: 1,
-              filter: "blur(0px)",
-            }}
-            transition={{
-              duration: d.duration + 0.2,
-              delay: d.delay,
-              ease: "easeOut",
-            }}
-          />
-        ))}
-      </div>
-    </motion.div>
+      )}
+    </div>
   );
 }

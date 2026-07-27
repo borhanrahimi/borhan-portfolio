@@ -7,8 +7,7 @@
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--text);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: Arial, Helvetica, sans-serif;
 }
 
 /* =========================
@@ -48,48 +47,6 @@ span {
     border-color 350ms ease,
     box-shadow 350ms ease,
     fill 350ms ease;
-}
-
-/* =========================
-   PER-SECTION STAGGER MODE
-   =========================
-   Only active when html has .theme-staggering
-*/
-
-/* delay helpers */
-html.theme-staggering .delay-0,
-html.theme-staggering .delay-0 * {
-  transition-delay: 0ms !important;
-}
-
-html.theme-staggering .delay-80,
-html.theme-staggering .delay-80 * {
-  transition-delay: 80ms !important;
-}
-
-html.theme-staggering .delay-160,
-html.theme-staggering .delay-160 * {
-  transition-delay: 160ms !important;
-}
-
-html.theme-staggering .delay-240,
-html.theme-staggering .delay-240 * {
-  transition-delay: 240ms !important;
-}
-
-html.theme-staggering .delay-320,
-html.theme-staggering .delay-320 * {
-  transition-delay: 320ms !important;
-}
-
-html.theme-staggering .delay-400,
-html.theme-staggering .delay-400 * {
-  transition-delay: 400ms !important;
-}
-
-html.theme-staggering .delay-480,
-html.theme-staggering .delay-480 * {
-  transition-delay: 480ms !important;
 }
 
 /* =========================

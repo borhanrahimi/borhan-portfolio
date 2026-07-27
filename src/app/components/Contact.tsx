@@ -17,8 +17,8 @@ export default function Contact() {
 
                 <FadeInView delay={0.08}>
                     <p className="text-xl md:text-2xl leading-relaxed mb-12 max-w-2xl mx-auto theme-muted">
-                        I’m always interested in internships, collaborations, and building
-                        ambitious products.
+                        I’m interested in software, platform, and observability engineering
+                        opportunities where reliability and thoughtful products matter.
                     </p>
                 </FadeInView>
 
@@ -27,6 +27,7 @@ export default function Contact() {
                         {/* Email */}
                         <a
                             href="mailto:rahimi.borhan2000@gmail.com"
+                            aria-label="Email Borhan Rahimi"
                             className="px-8 py-4 rounded-full transition-colors font-semibold"
                             style={{ background: "var(--accent)", color: "#fff" }}
                         >

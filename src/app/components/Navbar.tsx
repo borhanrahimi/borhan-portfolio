@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { FadeIn } from "./Motion";
 import ThemeToggle from "./ThemeToggle";
 
 type NavItem = { label: string; href: string; id: string };
@@ -56,7 +55,7 @@ export default function Navbar() {
     }, []);
 
     return (
-        <FadeIn>
+        <>
             {/* Skip link for accessibility */}
             <a
                 href="#content"
@@ -175,6 +174,6 @@ export default function Navbar() {
                     )}
                 </div>
             </header>
-        </FadeIn>
+        </>
     );
 }
